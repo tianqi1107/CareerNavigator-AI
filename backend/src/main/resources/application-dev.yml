@@ -56,13 +56,13 @@ knife4j:
 
 # JWT
 jwt:
-  secret: ${JWT_SECRET:CareerNavigatorAI2024SecretKeyForJWTTokenGeneration!}
-  expiration: ${JWT_EXPIRATION:86400000}
+  secret: CareerNavigatorAI2024SecretKeyForJWTTokenGeneration2024Secure
+  expiration: 86400000
 
 # AI Provider Config
 app:
   ai:
-    default-provider: ${AI_DEFAULT_PROVIDER:deepseek}
+    default-provider: ${AI_DEFAULT_PROVIDER:mimo}
     providers:
       openai:
         api-key: ${OPENAI_API_KEY:}
@@ -80,10 +80,10 @@ app:
         model: ${ZHIPU_MODEL:glm-4}
         enabled: false
       mimo:
-        api-key: ${MIMO_API_KEY:}
-        base-url: ${MIMO_BASE_URL:https://api.xiaomi.com/v1}
-        model: ${MIMO_MODEL:mimo-chat}
-        enabled: false
+        api-key: ${MIMO_API_KEY:tp-cjiv03k75dnf5xbpe2w27ydf2i1ogz5yfszw3tc7jeeyrpbs}
+        base-url: ${MIMO_BASE_URL:https://token-plan-cn.xiaomimimo.com/v1}
+        model: ${MIMO_MODEL:mimo-v2.5-pro}
+        enabled: true
 
 # Cache (Caffeine in dev)
 spring.cache:

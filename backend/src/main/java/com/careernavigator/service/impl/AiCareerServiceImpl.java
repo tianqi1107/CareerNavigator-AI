@@ -58,7 +58,7 @@ public class AiCareerServiceImpl implements AiCareerService {
             analysis.setUserId(userId);
             analysis.setAnalysisType("CAREER_PLAN");
             analysis.setInputData(toJson(request));
-            analysis.setOutputData(response.getContent());
+            analysis.setOutputData("{\"content\":\"" + response.getContent().replace("\"", "\\\"").replace("\n", "\\n") + "\"}");
             analysis.setAiProvider(providerName);
             analysis.setAiModel(response.getModel());
             analysis.setTokensUsed(response.getTokensUsed());
@@ -103,8 +103,8 @@ public class AiCareerServiceImpl implements AiCareerService {
             AiAnalysis analysis = new AiAnalysis();
             analysis.setUserId(userId);
             analysis.setAnalysisType("CHAT");
-            analysis.setInputData(request.getMessage());
-            analysis.setOutputData(response.getContent());
+            analysis.setInputData("{\"message\":\"" + request.getMessage().replace("\"", "\\\"") + "\"}");
+            analysis.setOutputData("{\"content\":\"" + response.getContent().replace("\"", "\\\"").replace("\n", "\\n") + "\"}");
             analysis.setAiProvider(providerName);
             analysis.setAiModel(response.getModel());
             analysis.setTokensUsed(response.getTokensUsed());

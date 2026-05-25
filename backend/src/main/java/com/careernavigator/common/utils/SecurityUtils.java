@@ -15,8 +15,15 @@ public class SecurityUtils {
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
         Object principal = authentication.getPrincipal();
+        // JwtAuthenticationFilter sets principal as userId string
+        if (principal instanceof String userIdStr) {
+            try {
+                return Long.parseLong(userIdStr);
+            } catch (NumberFormatException e) {
+                throw new BusinessException(ResultCode.UNAUTHORIZED);
+            }
+        }
         if (principal instanceof org.springframework.security.core.userdetails.UserDetails userDetails) {
-            // userId stored as username in our implementation
             try {
                 return Long.parseLong(userDetails.getUsername());
             } catch (NumberFormatException e) {
