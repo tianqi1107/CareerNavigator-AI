@@ -46,4 +46,12 @@ public class MajorController {
     public R<List<JobVO>> getRelatedJobs(@PathVariable Long id) {
         return R.ok(majorService.getRelatedJobs(id));
     }
+
+    @Operation(summary = "根据专业查询可报考岗位")
+    @GetMapping("/search-jobs")
+    public R<List<JobVO>> searchJobsByMajor(
+            @RequestParam String major,
+            @RequestParam(required = false) String type) {
+        return R.ok(majorService.searchJobsByMajor(major, type));
+    }
 }

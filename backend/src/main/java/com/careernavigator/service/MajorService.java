@@ -15,4 +15,6 @@ public interface MajorService {
     List<MajorVO> getHotMajors(int limit);
 
     List<JobVO> getRelatedJobs(Long majorId);
+
+    List<JobVO> searchJobsByMajor(String major, String type);
 }

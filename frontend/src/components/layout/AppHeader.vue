@@ -104,6 +104,7 @@ const isDark = ref(true)
 const navItems = [
   { name: '首页', path: '/' },
   { name: '专业查询', path: '/majors' },
+  { name: '专业查岗位', path: '/major-jobs' },
   { name: '岗位列表', path: '/jobs' },
   { name: 'AI规划', path: '/ai/career' },
   { name: '数据看板', path: '/dashboard' },

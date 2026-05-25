@@ -13,6 +13,10 @@ import com.careernavigator.mapper.MajorJobMappingMapper;
 import com.careernavigator.mapper.JobCategoryMapper;
 import com.careernavigator.mapper.JobMapper;
 import com.careernavigator.entity.Job;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import com.careernavigator.service.MajorService;
 import com.careernavigator.vo.JobVO;
 import com.careernavigator.vo.MajorVO;
@@ -116,6 +120,78 @@ public class MajorServiceImpl implements MajorService {
                         .last("LIMIT 20")
         );
         return jobs.stream().map(this::toJobVO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<JobVO> searchJobsByMajor(String major, String type) {
+        // 1. Find matching majors
+        List<Major> majors = majorMapper.selectList(
+                new LambdaQueryWrapper<Major>()
+                        .and(w -> w.like(Major::getMajorName, major)
+                                .or().like(Major::getMajorCode, major))
+                        .eq(Major::getStatus, 1)
+                        .last("LIMIT 10")
+        );
+
+        List<Job> allJobs = new ArrayList<>();
+
+        // 2. Find jobs via major_job_mapping
+        if (!majors.isEmpty()) {
+            List<Long> majorIds = majors.stream().map(Major::getId).collect(Collectors.toList());
+            List<MajorJobMapping> mappings = majorJobMappingMapper.selectList(
+                    new LambdaQueryWrapper<MajorJobMapping>()
+                            .in(MajorJobMapping::getMajorId, majorIds)
+                            .orderByDesc(MajorJobMapping::getRelevanceScore)
+            );
+            if (!mappings.isEmpty()) {
+                List<Long> categoryIds = mappings.stream()
+                        .map(MajorJobMapping::getJobCategoryId)
+                        .distinct()
+                        .collect(Collectors.toList());
+                LambdaQueryWrapper<Job> wrapper = new LambdaQueryWrapper<Job>()
+                        .in(Job::getCategoryId, categoryIds)
+                        .eq(Job::getStatus, 1);
+                if ("civil_service".equals(type)) {
+                    wrapper.eq(Job::getIsCivilService, 1);
+                } else if ("soe".equals(type)) {
+                    wrapper.eq(Job::getIsStateOwned, 1);
+                }
+                wrapper.orderByDesc(Job::getHotScore).last("LIMIT 50");
+                allJobs.addAll(jobMapper.selectList(wrapper));
+            }
+        }
+
+        // 3. Also search jobs whose description/requirements contain the major name
+        LambdaQueryWrapper<Job> descWrapper = new LambdaQueryWrapper<Job>()
+                .eq(Job::getStatus, 1)
+                .and(w -> w.like(Job::getDescription, major)
+                        .or().like(Job::getRequirements, major));
+        if ("civil_service".equals(type)) {
+            descWrapper.eq(Job::getIsCivilService, 1);
+        } else if ("soe".equals(type)) {
+            descWrapper.eq(Job::getIsStateOwned, 1);
+        }
+        descWrapper.last("LIMIT 50");
+        List<Job> descJobs = jobMapper.selectList(descWrapper);
+
+        // Merge and deduplicate
+        Set<Long> seenIds = allJobs.stream().map(Job::getId).collect(Collectors.toSet());
+        for (Job j : descJobs) {
+            if (!seenIds.contains(j.getId())) {
+                allJobs.add(j);
+                seenIds.add(j.getId());
+            }
+        }
+
+        // Sort by hot score
+        allJobs.sort((a, b) -> b.getHotScore() - a.getHotScore());
+
+        return allJobs.stream().limit(50).map(job -> {
+            JobVO vo = toJobVO(job);
+            JobCategory cat = jobCategoryMapper.selectById(job.getCategoryId());
+            if (cat != null) vo.setCategoryName(cat.getName());
+            return vo;
+        }).collect(Collectors.toList());
     }
 
     private MajorVO toVO(Major major) {

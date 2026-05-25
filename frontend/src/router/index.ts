@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: '', name: 'Home', component: () => import('@/views/Home.vue') },
       { path: 'majors', name: 'MajorSearch', component: () => import('@/views/MajorSearch.vue') },
+      { path: 'major-jobs', name: 'MajorJobs', component: () => import('@/views/MajorJobs.vue') },
       { path: 'jobs', name: 'JobList', component: () => import('@/views/JobList.vue') },
       { path: 'jobs/:id', name: 'JobDetail', component: () => import('@/views/JobDetail.vue') },
       { path: 'ai/career', name: 'AiCareer', component: () => import('@/views/AiCareer.vue'), meta: { requiresAuth: true } },
