@@ -7,12 +7,16 @@
     <div class="bg-white dark:bg-dark-card rounded-xl border border-gray-200 dark:border-dark-border mb-4 h-[500px] overflow-y-auto p-4 space-y-4" ref="chatBox">
       <div v-for="(msg, i) in messages" :key="i" :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
         <div
-          :class="msg.role === 'user'
-            ? 'bg-blue-500 text-white rounded-2xl rounded-br-sm'
-            : 'bg-gray-100 dark:bg-dark-border text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-sm'"
-          class="max-w-[80%] px-4 py-3 text-sm whitespace-pre-line"
+          v-if="msg.role === 'user'"
+          class="max-w-[80%] px-4 py-3 text-sm bg-blue-500 text-white rounded-2xl rounded-br-sm whitespace-pre-line"
         >
           {{ msg.content }}
+        </div>
+        <div
+          v-else
+          class="max-w-[80%] px-4 py-3 text-sm bg-gray-100 dark:bg-dark-border text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-sm"
+        >
+          <MarkdownRenderer :content="msg.content" />
         </div>
       </div>
       <div v-if="chatLoading" class="flex justify-start">
@@ -53,6 +57,7 @@
 import { ref, nextTick } from 'vue'
 import { aiChat } from '@/api/ai'
 import { ElMessage } from 'element-plus'
+import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
 
 const input = ref('')
 const chatLoading = ref(false)

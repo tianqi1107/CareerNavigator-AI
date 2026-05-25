@@ -58,9 +58,7 @@
             <h2 class="text-lg font-semibold dark:text-white">分析结果</h2>
             <el-tag size="small" type="info">{{ result.aiProvider }}</el-tag>
           </div>
-          <div class="prose prose-sm dark:prose-invert max-w-none whitespace-pre-line text-gray-700 dark:text-gray-300">
-            {{ result.overallAdvice }}
-          </div>
+          <MarkdownRenderer :content="result.overallAdvice" />
         </div>
 
         <div v-else class="bg-white dark:bg-dark-card rounded-xl p-12 border border-gray-200 dark:border-dark-border text-center">
@@ -77,6 +75,7 @@
 import { ref, reactive } from 'vue'
 import { DataAnalysis } from '@element-plus/icons-vue'
 import { careerPlan } from '@/api/ai'
+import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
 import { ElMessage } from 'element-plus'
 import type { CareerPlanResponse } from '@/types/ai'
 
