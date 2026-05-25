@@ -80,8 +80,8 @@ async function sendMessage(msg?: string) {
   try {
     const res = await aiChat({ message: text })
     messages.value.push({ role: 'assistant', content: res.data || '抱歉，暂时无法回答。' })
-  } catch (e) {
-    messages.value.push({ role: 'assistant', content: '抱歉，AI服务暂时不可用，请稍后重试。' })
+  } catch (e: any) {
+    messages.value.push({ role: 'assistant', content: '抱歉，' + (e.message || 'AI服务暂时不可用') + '。请稍后重试。' })
   } finally {
     chatLoading.value = false
     await scrollToBottom()

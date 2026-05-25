@@ -102,8 +102,8 @@ async function submitPlan() {
   try {
     const res = await careerPlan(form)
     result.value = res.data
-  } catch (e) {
-    ElMessage.error('AI分析失败，请稍后重试')
+  } catch (e: any) {
+    ElMessage.error(e.message || 'AI分析失败，请稍后重试')
   } finally {
     loading.value = false
   }
